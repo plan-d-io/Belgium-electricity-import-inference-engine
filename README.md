@@ -1,7 +1,4 @@
-[---
-layout: default
-title: Belgium electricity import mix – methodology
----](https://plan-d-io.github.io/Belgium-electricity-import-inference-engine/)
+[Read the screen-friendly version here](https://plan-d-io.github.io/Belgium-electricity-import-inference-engine/)
 
 # Belgium-electricity-import-inference-engine
 A method to infer the make-up of Belgian electricity imports
