@@ -45,13 +45,17 @@ Identifying these marginal technologies is therefore essential to understand whi
 
 At each quarter hour, generation by technology is observed. The marginal technology is approximated as the technology that increases output when demand rises.
 
-For technology i:
+For technology *i*, the change in output between two consecutive quarter-hours is defined as:
 
-ΔGᵢ(t) = Gᵢ(t) − Gᵢ(t−1)
+\[
+\Delta G_i(t) = G_i(t) - G_i(t-1)
+\]
 
-Only positive ramps are considered:
+Only positive ramps are considered relevant for marginal supply:
 
-ΔGᵢ⁺(t) = max(ΔGᵢ(t), 0)
+\[
+\Delta G_i^+(t) = \max\bigl(\Delta G_i(t),\, 0\bigr)
+\]
 
 Technologies with the largest significant positive ramps are candidates for marginality. Small fluctuations are filtered using minimum ramp thresholds to avoid noise.​
 
@@ -98,9 +102,17 @@ Exports to Belgium are allocated sequentially across the marginal stack until fu
 
 Belgium is often a transit country: we import from country A and export to country B. To avoid double counting, the analysis focuses on net imports.
 
-Belgium’s net import is defined as:
+Belgium’s net import position is defined as the difference between total imports and total exports, bounded below by zero:
 
-Net Import_BE(t) = max( Σ_c Import_(c→BE)(t) − Σ_c Export_(BE→c)(t), 0 )
+\[
+\text{Net Import}_{BE}(t)
+= \max\left(
+\sum_c \text{Import}_{c \rightarrow BE}(t)
+-
+\sum_c \text{Export}_{BE \rightarrow c}(t),
+\; 0
+\right)
+\]
 
 Two metrics are reported:
 - an accounting-based net import mix,
@@ -121,16 +133,22 @@ It is an accounting view using marginal-stack attribution.
 
 *Which technologies were most likely activated because Belgium was a sink, not a transit zone?*
 
-A simple transit indicator is defined as:
+To account for Belgium’s role as a transit country, a simple transit indicator is defined as:
 
-Transit Ratio(t) = min(Imports(t), Exports(t)) / max(Imports(t), Exports(t))
+\[
+\text{Transit Ratio}(t)
+= \frac{\min\bigl(\text{Imports}(t),\, \text{Exports}(t)\bigr)}
+{\max\bigl(\text{Imports}(t),\, \text{Exports}(t)\bigr)}
+\]
 
 This ratio approaches 1 when imports and exports are similar (transit-dominated),
 and approaches 0 when Belgium is clearly a net sink or source.
 
-A causal weight is then defined as:
+A causal weight is then derived as:
 
-w_causal(t) = 1 − Transit Ratio(t)
+\[
+w_{\text{causal}}(t) = 1 - \text{Transit Ratio}(t)
+\]
 
 Metric 1 is multiplied by this weight to downweight transit-heavy intervals.
 
