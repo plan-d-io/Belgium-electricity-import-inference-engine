@@ -47,15 +47,15 @@ At each quarter hour, generation by technology is observed. The marginal technol
 
 For technology *i*, the change in output between two consecutive quarter-hours is defined as:
 
-\[
-\Delta G\_i(t) = G\_i(t) - G\_i(t-1)
-\]
+$$
+\Delta G_i(t) = G_i(t) - G_i(t-1)
+$$
 
 Only positive ramps are considered relevant for marginal supply:
 
-\[
-\Delta G\_i^{+}(t) = \max\bigl(\Delta G\_i(t),\, 0\bigr)
-\]
+$$
+\Delta G_i^{+}(t) = \max\bigl(\Delta G_i(t),\, 0\bigr)
+$$
 
 Technologies with the largest significant positive ramps are candidates for marginality. Small fluctuations are filtered using minimum ramp thresholds to avoid noise.​
 
@@ -104,15 +104,16 @@ Belgium is often a transit country: we import from country A and export to count
 
 Belgium’s net import position is defined as the difference between total imports and total exports, bounded below by zero:
 
-\[
-\text{Transit Ratio}(t)
+$$
+\text{Net Import}_{\text{BE}}(t)
 =
-\frac{
-\min\bigl(\text{Imports}(t),\, \text{Exports}(t)\bigr)
-}{
-\max\bigl(\text{Imports}(t),\, \text{Exports}(t)\bigr)
-}
-\]
+\max\left(
+\sum_c \text{Import}_{c \rightarrow \text{BE}}(t)
+-
+\sum_c \text{Export}_{\text{BE} \rightarrow c}(t),
+\; 0
+\right)
+$$
 
 Two metrics are reported:
 - an accounting-based net import mix,
@@ -135,25 +136,24 @@ It is an accounting view using marginal-stack attribution.
 
 To account for Belgium’s role as a transit country, a simple transit indicator is defined as:
 
-\[
-\text{Net Import}\_{\text{BE}}(t)
+$$
+\text{Transit Ratio}(t)
 =
-\max\left(
-\sum\_c \text{Import}\_{c \rightarrow \text{BE}}(t)
--
-\sum\_c \text{Export}\_{\text{BE} \rightarrow c}(t),
-\; 0
-\right)
-\]
+\frac{
+\min\bigl(\text{Imports}(t),\, \text{Exports}(t)\bigr)
+}{
+\max\bigl(\text{Imports}(t),\, \text{Exports}(t)\bigr)
+}
+$$
 
 This ratio approaches 1 when imports and exports are similar (transit-dominated),
 and approaches 0 when Belgium is clearly a net sink or source.
 
 A causal weight is then derived as:
 
-\[
-w\_{\text{causal}}(t) = 1 - \text{Transit Ratio}(t)
-\]
+$$
+w_{\text{causal}}(t) = 1 - \text{Transit Ratio}(t)
+$$
 
 Metric 1 is multiplied by this weight to downweight transit-heavy intervals.
 
