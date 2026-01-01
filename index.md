@@ -6,6 +6,10 @@ title: Belgium electricity import mix – methodology
 # Belgium-electricity-import-inference-engine
 A method to infer the make-up of Belgian electricity imports
 
+![Belgium net import mix – Metric 1 (2025)](
+https://raw.githubusercontent.com/Epyon01P/Belgium-electricity-import-inference-engine/main/BE_net_import_mix_M1_share_2025rs.png
+)
+
 ## Motivation
 **What Does Belgium Really Import?**
 
