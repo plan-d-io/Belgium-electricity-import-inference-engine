@@ -67,7 +67,7 @@ Therefore, country-specific eligibility rules are applied:
 - UK & Netherlands: gas-dominated marginality
 - Germany: regime switching between lignite, coal, and gas
 
-The result of this step is a detected marginal technology for each country and quarter hour — when such detection is possible.
+The result of this step is a detected marginal technology for each country and quarter hour — when such detection is possible. See the per-country assumptions below.
 
 #### Step 1b — Price-Imputed Fallback
 In many intervals:
@@ -77,10 +77,65 @@ In many intervals:
 
 In these cases, ramp-based detection alone is insufficient, and I inferr marginality from **price regimes**. Prices are grouped into low, mid, high, and scarcity regimes. For each regime and country, a plausible marginal ordering is defined based on cost structures and historical dispatch behaviour. This fallback is used **only when ramp-based detection yields no clear result**.
 
-### Per country summary
-To apply the two-step method described above, I used the following per-country assumptions:
 
-### General Technology Classifications
+### Step 2 — Constructing an Inferred Marginal Stack
+Export volumes frequently exceed the ramp of a single technology. Therefore, a **marginal stack** is constructed:
+1. detected marginal technologies (ordered by ramp size),
+2. followed by price-imputed technologies ordered by plausibility and availability.
+
+This stack acts as a **proxy merit order** (or a reverse one, if you will), inferred from observable data rather than bids. 
+
+### Step 3 — Allocating Cross-Border Exports
+
+Exports to Belgium are allocated sequentially across the marginal stack until fully attributed. Any residual is recorded explicitly. In laymans terms: if the observed export to Belgium cannot be supplied by the detected marginal technology, the second-to-marginal tech is used, then the third etc.
+
+### Step 4 — Net Imports and Transit
+
+Belgium is often a transit country: we import from country A and export to country B. To avoid double counting, the analysis focuses on net imports.
+
+Belgium’s net import is defined as:
+
+Net Import_BE(t) = max( Σ_c Import_(c→BE)(t) − Σ_c Export_(BE→c)(t), 0 )
+
+Two metrics are reported:
+- an accounting-based net import mix,
+- a transit-corrected marginal attribution proxy.
+
+#### Metric 1 — Net-Import Mix (Accounting View)
+
+*What types of electricity did Belgium rely on abroad, on net?*
+
+This metric:
+- weights neighbouring countries’ inferred export mixes,
+- scales them to Belgium’s net import volume,
+- makes no claim about causality (*which country initiated the export, Belgium or a country Belgium is exporting to?.*)
+
+It is an accounting view using marginal-stack attribution.
+
+#### Metric 2 — Marginal Import Attribution (Causal Proxy)
+
+*Which technologies were most likely activated because Belgium was a sink, not a transit zone?*
+
+A transit indicator is defined as:
+Transit Ratio(t)=min⁡(Imports,Exports)max⁡(Imports,Exports)
+Transit Ratio(t)=
+max(Imports,Exports)
+min(Imports,Exports)
+
+A causal weight follows:
+
+wcausal(t)=1−Transit Ratio(t)
+w
+causal
+	​
+
+(t)=1−Transit Ratio(t)
+
+Metric 1 is multiplied by this weight to downweight transit-heavy intervals.
+
+This metric is explicitly labelled a causal proxy, not a counterfactual result.
+
+## General Technology Classifications
 
 **Non-Dispatchable / Exogenous** (excluded from candidates):
 - Wind Onshore, Wind Offshore, Solar
@@ -185,28 +240,6 @@ To apply the two-step method described above, I used the following per-country a
 - **Low (P <= P30)**: Lignite → Hard coal → Other
 
 **Rationale**: Germany often has coal/lignite on the margin in mid/low price regimes; gas tends to dominate high/scarcity.
-
-### Step 2 — Constructing an Inferred Marginal Stack
-Export volumes frequently exceed the ramp of a single technology. Therefore, a **marginal stack** is constructed:
-1. detected marginal technologies (ordered by ramp size),
-2. followed by price-imputed technologies ordered by plausibility and availability.
-
-This stack acts as a **proxy merit order**, inferred from observable data rather than bids.
-
-### Step 3 — Allocating Cross-Border Exports
-
-Exports to Belgium are allocated sequentially across the marginal stack until fully attributed. Any residual is recorded explicitly.
-
-### Step 4 — Net Imports and Transit
-
-Belgium’s net import is defined as:
-
-Net Import_BE(t) = max( Σ_c Import_(c→BE)(t) − Σ_c Export_(BE→c)(t), 0 )
-
-Two metrics are reported:
-- an accounting-based net import mix,
-- a transit-corrected marginal attribution proxy.
-
 
 ## Interpretation
 
