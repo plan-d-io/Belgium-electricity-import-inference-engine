@@ -1,3 +1,7 @@
+---
+layout: default
+---
+
 # Belgium-electricity-import-inference-engine
 A method to infer the make-up of Belgian electricity imports
 
@@ -75,7 +79,7 @@ In many intervals:
 - multiple technologies move slightly,
 - or the marginal unit is already running and does not ramp visibly.
 
-In these cases, ramp-based detection alone is insufficient, and I inferr marginality from **price regimes**. Prices are grouped into low, mid, high, and scarcity regimes. For each regime and country, a plausible marginal ordering is defined based on cost structures and historical dispatch behaviour. This fallback is used **only when ramp-based detection yields no clear result**.
+In these cases, ramp-based detection alone is insufficient, and I inferr marginality from **price regimes**. Prices are grouped into low, mid, high, and scarcity regimes. For each regime and country, a plausible marginal ordering is defined based on cost structures and historical dispatch behaviour. See assumptions below. This fallback is used **only when ramp-based detection yields no clear result**.
 
 
 ### Step 2 — Constructing an Inferred Marginal Stack
@@ -87,7 +91,7 @@ This stack acts as a **proxy merit order** (or a reverse one, if you will), infe
 
 ### Step 3 — Allocating Cross-Border Exports
 
-Exports to Belgium are allocated sequentially across the marginal stack until fully attributed. Any residual is recorded explicitly. In laymans terms: if the observed export to Belgium cannot be supplied by the detected marginal technology, the second-to-marginal tech is used, then the third etc.
+Exports to Belgium are allocated sequentially across the marginal stack until fully attributed. Any residual is recorded explicitly. In laymans terms: if the observed export from Country A to Belgium cannot be supplied by the detected marginal technology in country A, the second-to-marginal tech is used, then the third etc.
 
 ### Step 4 — Net Imports and Transit
 
@@ -116,28 +120,25 @@ It is an accounting view using marginal-stack attribution.
 
 *Which technologies were most likely activated because Belgium was a sink, not a transit zone?*
 
-A transit indicator is defined as:
-Transit Ratio(t)=min⁡(Imports,Exports)max⁡(Imports,Exports)
-Transit Ratio(t)=
-max(Imports,Exports)
-min(Imports,Exports)
+A simple transit indicator is defined as:
 
-A causal weight follows:
+Transit Ratio(t) = min(Imports(t), Exports(t)) / max(Imports(t), Exports(t))
 
-wcausal(t)=1−Transit Ratio(t)
-w
-causal
-	​
+This ratio approaches 1 when imports and exports are similar (transit-dominated),
+and approaches 0 when Belgium is clearly a net sink or source.
 
-(t)=1−Transit Ratio(t)
+A causal weight is then defined as:
+
+w_causal(t) = 1 − Transit Ratio(t)
 
 Metric 1 is multiplied by this weight to downweight transit-heavy intervals.
 
 This metric is explicitly labelled a causal proxy, not a counterfactual result.
 
-## General Technology Classifications
+## Assumptions
+### General Technology Classifications
 
-**Non-Dispatchable / Exogenous** (excluded from candidates):
+**Non-Dispatchable / Exogenously dispatched (e.g. by weather conditions)** (excluded from candidates):
 - Wind Onshore, Wind Offshore, Solar
 - Hydro Run-of-river and pondage, Marine
 - Other renewable, Geothermal
@@ -151,9 +152,9 @@ This metric is explicitly labelled a causal proxy, not a counterfactual result.
 - Fossil Coal-derived gas, Fossil Oil, Fossil Oil shale, Fossil Peat
 - Biomass, Waste, Energy storage, Other
 
-## Country-Specific Logic
+### Country-Specific Logic
 
-### France (FR)
+#### France (FR)
 
 **Market Characteristics:**
 - Strategic reservoir hydro dispatch based on opportunity cost
@@ -177,7 +178,7 @@ This metric is explicitly labelled a causal proxy, not a counterfactual result.
 
 **Rationale**: Reservoir hydro is strategically dispatched in high-price hours; nuclear is almost never marginal.
 
-### United Kingdom (GB)
+#### United Kingdom (GB)
 
 **Market Characteristics:**
 - Gas-dominated marginality
@@ -198,7 +199,7 @@ This metric is explicitly labelled a causal proxy, not a counterfactual result.
 
 **Rationale**: UK price formation dominated by gas/peakers rather than reservoir hydro.
 
-### Netherlands (NL)
+#### Netherlands (NL)
 
 **Market Characteristics:**
 - Gas-dominated, similar to UK
@@ -219,7 +220,7 @@ This metric is explicitly labelled a causal proxy, not a counterfactual result.
 
 **Rationale**: Marginality is stable and usually gas; simpler than Germany/France.
 
-### Germany (DE)
+#### Germany (DE)
 
 **Market Characteristics:**
 - Multiple marginal regimes (lignite/coal/gas)
@@ -241,19 +242,18 @@ This metric is explicitly labelled a causal proxy, not a counterfactual result.
 
 **Rationale**: Germany often has coal/lignite on the margin in mid/low price regimes; gas tends to dominate high/scarcity.
 
-## Interpretation
+## What This Method Can and Cannot Do
 
-This methodology provides:
-- transparency,
-- reproducibility,
-- and informed approximation.
+What it can do
+- provide an informed picture of Belgium’s import dependency,
+- support policy and public discussion,
+- highlight import exposure to gas, coal, nuclear, and hydro.
 
-It does not provide:
-- dispatch reconstruction,
-- welfare analysis,
-- or Euphemia replication.
-
----
+What it cannot do
+- identify the true price-setting unit,
+- trace physical power flows,
+- reproduce Euphemia outcomes,
+- support welfare or counterfactual analysis.
 
 ## Data Sources
 
